@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Health Center Cheruvadi</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 20px;
+      }
+      .form-container {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: auto;
+      }
+      input,
+      select,
+      button {
+        margin: 8px 0;
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #tokenCanvas {
+        display: none; /* hidden until generated */
+        margin: 20px auto;
+        border: 2px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Community Health Center Cheruvadi</h1>
+    <div class="form-container">
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="mobile" placeholder="Mobile Number" required />
+      <input type="text" id="address" placeholder="Address" required />
+      <select id="bloodGroup" required>
+        <option value="">Select Blood Group</option>
+        <option>A+</option>
+        <option>A-</option>
+        <option>B+</option>
+        <option>B-</option>
+        <option>AB+</option>
+        <option>AB-</option>
+        <option>O+</option>
+        <option>O-</option>
+      </select>
+      <button onclick="generateToken()">Generate Token</button>
+      <button onclick="downloadToken()">Download Token</button>
+    </div>
+
+    <canvas id="tokenCanvas" width="540" height="960"></canvas>
+
+    <script>
+      let tokenNumber = "";
+
+      function generateToken() {
+        const fullName = document.getElementById("fullName").value;
+        const mobile = document.getElementById("mobile").value;
+        const address = document.getElementById("address").value;
+        const bloodGroup = document.getElementById("bloodGroup").value;
+
+        if (!fullName || !mobile || !address || !bloodGroup) {
+          alert("Please fill all fields!");
+          return;
+        }
+
+        const today = new Date();
+        const dateStr = today.toISOString().split("T")[0].replace(/-/g, "");
+        const randomNum = Math.floor(Math.random() * 900 + 100);
+        tokenNumber = dateStr + "-" + randomNum;
+        const dateTime = today.toLocaleString();
+
+        const canvas = document.getElementById("tokenCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.style.display = "block"; // show only after generating
+
+        // White background
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Border
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 6;
+        ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+        // Header
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 34px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("Community Health Center", canvas.width / 2, 80);
+        ctx.fillText("Cheruvadi", canvas.width / 2, 130);
+
+        // Divider
+        ctx.beginPath();
+        ctx.moveTo(60, 160);
+        ctx.lineTo(canvas.width - 60, 160);
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Token text
+        ctx.fillStyle = "#d9534f";
+        ctx.font = "bold 60px Arial";
+        ctx.fillText("Token", canvas.width / 2, 250);
+        ctx.font = "bold 70px Arial";
+        ctx.fillText(tokenNumber, canvas.width / 2, 330);
+
+        // Divider
+        ctx.beginPath();
+        ctx.moveTo(60, 370);
+        ctx.lineTo(canvas.width - 60, 370);
+        ctx.stroke();
+
+        // Patient details
+        ctx.fillStyle = "#000";
+        ctx.font = "24px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText("👤 Name: " + fullName, 60, 430);
+        ctx.fillText("📞 Mobile: " + mobile, 60, 480);
+        ctx.fillText("🏠 Address: " + address, 60, 530);
+        ctx.fillText("🩸 Blood Group: " + bloodGroup, 60, 580);
+
+        // Divider
+        ctx.beginPath();
+        ctx.moveTo(60, 620);
+        ctx.lineTo(canvas.width - 60, 620);
+        ctx.stroke();
+
+        // Footer
+        ctx.fillStyle = "#444";
+        ctx.font = "20px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(
+          "Generated on: " + dateTime,
+          canvas.width / 2,
+          canvas.height - 60
+        );
+        ctx.fillText(
+          "✅ Thank you for visiting",
+          canvas.width / 2,
+          canvas.height - 20
+        );
+      }
+
+      function downloadToken() {
+        const canvas = document.getElementById("tokenCanvas");
+        if (canvas.style.display === "none") {
+          alert("Please generate a token first!");
+          return;
+        }
+        const link = document.createElement("a");
+        link.download = tokenNumber + ".png";
+        link.href = canvas.toDataURL();
+        link.click();
+      }
+    </script>
+  </body>
+</html>
+
