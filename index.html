@@ -40,7 +40,7 @@
         background: #0056b3;
       }
       #tokenCanvas {
-        display: none; /* hidden until generated */
+        display: none;
         margin: 20px auto;
         border: 2px solid #000;
       }
@@ -72,6 +72,24 @@
     <script>
       let tokenNumber = "";
 
+      function getTokenForToday() {
+        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const savedDate = localStorage.getItem("tokenDate");
+        let counter = parseInt(localStorage.getItem("tokenCounter")) || 0;
+
+        if (savedDate !== today) {
+          // New day → reset counter
+          counter = 1;
+        } else {
+          counter++;
+        }
+
+        localStorage.setItem("tokenDate", today);
+        localStorage.setItem("tokenCounter", counter);
+
+        return counter;
+      }
+
       function generateToken() {
         const fullName = document.getElementById("fullName").value;
         const mobile = document.getElementById("mobile").value;
@@ -84,14 +102,15 @@
         }
 
         const today = new Date();
-        const dateStr = today.toISOString().split("T")[0].replace(/-/g, "");
-        const randomNum = Math.floor(Math.random() * 900 + 100);
-        tokenNumber = dateStr + "-" + randomNum;
         const dateTime = today.toLocaleString();
+        const todayStr = today.toISOString().split("T")[0].replace(/-/g, "");
+
+        const dailyToken = getTokenForToday();
+        tokenNumber = todayStr + "-" + dailyToken;
 
         const canvas = document.getElementById("tokenCanvas");
         const ctx = canvas.getContext("2d");
-        canvas.style.display = "block"; // show only after generating
+        canvas.style.display = "block";
 
         // White background
         ctx.fillStyle = "#fff";
@@ -113,8 +132,6 @@
         ctx.beginPath();
         ctx.moveTo(60, 160);
         ctx.lineTo(canvas.width - 60, 160);
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 2;
         ctx.stroke();
 
         // Token text
@@ -122,7 +139,7 @@
         ctx.font = "bold 60px Arial";
         ctx.fillText("Token", canvas.width / 2, 250);
         ctx.font = "bold 70px Arial";
-        ctx.fillText(tokenNumber, canvas.width / 2, 330);
+        ctx.fillText("#" + dailyToken, canvas.width / 2, 330);
 
         // Divider
         ctx.beginPath();
@@ -149,16 +166,8 @@
         ctx.fillStyle = "#444";
         ctx.font = "20px Arial";
         ctx.textAlign = "center";
-        ctx.fillText(
-          "Generated on: " + dateTime,
-          canvas.width / 2,
-          canvas.height - 60
-        );
-        ctx.fillText(
-          "✅ Thank you for visiting",
-          canvas.width / 2,
-          canvas.height - 20
-        );
+        ctx.fillText("Generated on: " + dateTime, canvas.width / 2, canvas.height - 60);
+        ctx.fillText("✅ Thank you for visiting", canvas.width / 2, canvas.height - 20);
       }
 
       function downloadToken() {
@@ -175,4 +184,3 @@
     </script>
   </body>
 </html>
-
